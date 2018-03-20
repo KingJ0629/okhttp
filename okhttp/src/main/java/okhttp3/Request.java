@@ -133,6 +133,7 @@ public final class Request {
       if (url == null) throw new NullPointerException("url == null");
 
       // Silently replace web socket URLs with HTTP URLs.
+      // 静默的将以ws:或者wss:开头的WebSocket链接替换为http和https
       if (url.regionMatches(true, 0, "ws:", 0, 3)) {
         url = "http:" + url.substring(3);
       } else if (url.regionMatches(true, 0, "wss:", 0, 4)) {

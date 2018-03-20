@@ -74,7 +74,9 @@ final class RealCall implements Call {
     eventListener.callStart(this);
     try {
       client.dispatcher().executed(this);
+      
       Response result = getResponseWithInterceptorChain();
+      
       if (result == null) throw new IOException("Canceled");
       return result;
     } catch (IOException e) {
@@ -179,18 +181,27 @@ final class RealCall implements Call {
   String redactedUrl() {
     return originalRequest.url().redact();
   }
-
+  
+  /**
+   * 同步和异步最终都是调用这个方法请求数据
+   */
   Response getResponseWithInterceptorChain() throws IOException {
     // Build a full stack of interceptors.
     List<Interceptor> interceptors = new ArrayList<>();
     interceptors.addAll(client.interceptors());
+    // 负责失败重试以及重定向的过滤器
     interceptors.add(retryAndFollowUpInterceptor);
+    // 负责把用户构造的请求转换为发送到服务器的请求、把服务器返回的响应转换为用户友好的响应的过滤器
     interceptors.add(new BridgeInterceptor(client.cookieJar()));
+    // 负责读取缓存直接返回、更新缓存的过滤器
     interceptors.add(new CacheInterceptor(client.internalCache()));
+    // 负责和服务器建立连接的过滤器
     interceptors.add(new ConnectInterceptor(client));
     if (!forWebSocket) {
+      // 配置 OkHttpClient 时设置的过滤器
       interceptors.addAll(client.networkInterceptors());
     }
+    // 负责向服务器发送请求数据、从服务器读取响应数据的过滤器
     interceptors.add(new CallServerInterceptor(forWebSocket));
 
     Interceptor.Chain chain = new RealInterceptorChain(interceptors, null, null, null, 0,

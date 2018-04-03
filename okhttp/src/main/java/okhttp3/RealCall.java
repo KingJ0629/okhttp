@@ -68,11 +68,13 @@ final class RealCall implements Call {
   @Override public Response execute() throws IOException {
     synchronized (this) {
       if (executed) throw new IllegalStateException("Already Executed");
+      // 标记为已经发起过请求。
       executed = true;
     }
     captureCallStackTrace();
     eventListener.callStart(this);
     try {
+      // 通过 OkHttpClient 的调度器执行请求。
       client.dispatcher().executed(this);
       
       Response result = getResponseWithInterceptorChain();
@@ -83,6 +85,7 @@ final class RealCall implements Call {
       eventListener.callFailed(this, e);
       throw e;
     } finally {
+      // 通过调度器结束该任务。
       client.dispatcher().finished(this);
     }
   }
@@ -188,6 +191,7 @@ final class RealCall implements Call {
   Response getResponseWithInterceptorChain() throws IOException {
     // Build a full stack of interceptors.
     List<Interceptor> interceptors = new ArrayList<>();
+    // 先加入使用者自定义的拦截器。
     interceptors.addAll(client.interceptors());
     // 负责失败重试以及重定向的过滤器
     interceptors.add(retryAndFollowUpInterceptor);
@@ -199,6 +203,7 @@ final class RealCall implements Call {
     interceptors.add(new ConnectInterceptor(client));
     if (!forWebSocket) {
       // 配置 OkHttpClient 时设置的过滤器
+      // 自定义的networkInterceptors则会加在CallServerInterceptor之前
       interceptors.addAll(client.networkInterceptors());
     }
     // 负责向服务器发送请求数据、从服务器读取响应数据的过滤器

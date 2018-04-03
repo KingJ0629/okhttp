@@ -21,7 +21,10 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Sink;
 
-/** Encodes HTTP requests and decodes HTTP responses. */
+/**
+ * Encodes HTTP requests and decodes HTTP responses.
+ * 编码HTTP请求并解码HTTP响应
+ */
 public interface HttpCodec {
   /**
    * The timeout to use while discarding a stream of input data. Since this is used for connection

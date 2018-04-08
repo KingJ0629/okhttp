@@ -191,6 +191,8 @@ final class RealCall implements Call {
   Response getResponseWithInterceptorChain() throws IOException {
     // Build a full stack of interceptors.
     List<Interceptor> interceptors = new ArrayList<>();
+    
+    // 下面几个是application interceptors，应用拦截器，一个请求只会执行一次
     // 先加入使用者自定义的拦截器。
     interceptors.addAll(client.interceptors());
     // 负责失败重试以及重定向的过滤器
@@ -204,6 +206,7 @@ final class RealCall implements Call {
     if (!forWebSocket) {
       // 配置 OkHttpClient 时设置的过滤器
       // 自定义的networkInterceptors则会加在CallServerInterceptor之前
+      // 这里的拦截器是网络拦截器，可能会多次执行；会在每次网络请求时都会执行，比如重定向
       interceptors.addAll(client.networkInterceptors());
     }
     // 负责向服务器发送请求数据、从服务器读取响应数据的过滤器

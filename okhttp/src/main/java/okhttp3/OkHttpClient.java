@@ -121,7 +121,7 @@ import static okhttp3.internal.Util.checkDuration;
  * }</pre>
  *
  * 当空闲时，线程和链接会被自动释放,shutdown不是必须的
- * client.dispatcher().executorService().shutdown()，也会导致接下来的请求被拒绝
+ * 如果你的程序需要积极释放没用的资源，可以调用client.dispatcher().executorService().shutdown()，但也会导致接下来的请求被拒绝
  *
  * <p>Clear the connection pool with {@link ConnectionPool#evictAll() evictAll()}. Note that the
  * connection pool's daemon thread may not exit immediately. <pre>   {@code

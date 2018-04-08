@@ -83,9 +83,13 @@ public interface Call extends Cloneable {
   /**
    * Create a new, identical call to this one which can be enqueued or executed even if this call
    * has already been.
+   * 创建一个新的，相同的call，一个可以被加入队列或者执行的，即使已经完成的。
    */
   Call clone();
-
+	
+  /**
+   * 工厂模式
+   */
   interface Factory {
     Call newCall(Request request);
   }
